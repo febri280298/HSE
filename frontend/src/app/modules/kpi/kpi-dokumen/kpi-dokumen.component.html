@@ -1,0 +1,36 @@
+<div class="card">
+  <div class="card-head">
+    <div class="card-title">{{ info().title }}</div>
+  </div>
+  <p class="caption mb-3">{{ info().hint }} Klik ikon centang untuk mengunduh.</p>
+
+  <div class="filters">
+    <p-select size="small" [options]="years" ariaLabel="Tahun" [ngModel]="year()" (ngModelChange)="changeYear($event)" />
+    <p-select size="small" [options]="plants()" optionLabel="name" optionValue="plantId" ariaLabel="Plant"
+              [ngModel]="plantId()" (ngModelChange)="changePlant($event)" />
+  </div>
+
+  @if (uploadable().length) {
+    <div class="upload">
+      <p-select size="small" [options]="uploadable()" optionLabel="deptName" optionValue="deptId" placeholder="Departemen" ariaLabel="Departemen"
+                [ngModel]="uploadDept()" (ngModelChange)="uploadDept.set($event)" />
+      <p-select size="small" [options]="monthChoices()" optionLabel="label" optionValue="value" placeholder="Bulan" ariaLabel="Bulan"
+                [ngModel]="uploadMonth()" (ngModelChange)="uploadMonth.set($event)" />
+      <p-button [label]="info().button" icon="pi pi-paperclip" size="small" severity="secondary" [outlined]="true" (onClick)="pickFile()" />
+      @if (file(); as chosen) {
+        <span class="file-name" [title]="chosen.name">{{ chosen.name }}</span>
+      }
+      <p-button label="Unggah" icon="pi pi-upload" size="small" [loading]="busy()" [disabled]="!canSubmit()" (onClick)="upload()" />
+      <input #picker type="file" hidden [accept]="info().accept" (change)="onFile($event)" />
+    </div>
+  }
+
+  <app-data-grid
+    [rows]="data()?.departments ?? []"
+    [columns]="columns"
+    [actions]="actions"
+    [loading]="loading()"
+    [rowId]="rowId"
+    [pageSize]="0"
+    emptyMessage="Belum ada departemen KPI di plant ini." />
+</div>

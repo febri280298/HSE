@@ -1,0 +1,23 @@
+<div class="card">
+  <div class="card-head">
+    <div class="card-title">PICA</div>
+    @if (editable().length) {
+      <p-button label="Tambah PICA" icon="pi pi-plus" size="small" (onClick)="openForm()" />
+    }
+  </div>
+  <p class="caption mb-3">Problem Identification and Corrective Action. Wajib dibuat kalau ada kasus penyakit atau kecelakaan.</p>
+
+  <div class="filters">
+    <p-select size="small" [options]="years" ariaLabel="Tahun" [ngModel]="year()" (ngModelChange)="changeYear($event)" />
+    <p-select size="small" [options]="plantChoices()" optionLabel="name" optionValue="plantId" ariaLabel="Plant"
+              [ngModel]="plantId()" (ngModelChange)="changePlant($event)" />
+  </div>
+
+  <app-data-grid
+    [rows]="items()"
+    [columns]="columns"
+    [actions]="actions"
+    [loading]="loading()"
+    [rowId]="rowId"
+    emptyMessage="Belum ada PICA." />
+</div>

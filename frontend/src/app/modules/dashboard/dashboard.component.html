@@ -1,0 +1,172 @@
+@if (akses() === 'ditolak') {
+  <p-message severity="warn">Anda tidak punya akses ke halaman itu. Minta admin HSE menambahkan hak akses ke peran Anda.</p-message>
+}
+
+@if (canSeeStats()) {
+  <div class="filters">
+    <p-select size="small" [options]="years" ariaLabel="Tahun" [ngModel]="year()" (ngModelChange)="changeYear($event)" />
+    <p-select size="small" [options]="plantChoices()" optionLabel="plantName" optionValue="plantId" ariaLabel="Plant"
+              [ngModel]="plantFilter()" (ngModelChange)="plantFilter.set($event)" />
+    <p-select size="small" [options]="typeOptions" optionLabel="label" optionValue="value" ariaLabel="Tipe temuan"
+              [ngModel]="typeFilter()" (ngModelChange)="typeFilter.set($event)" />
+    @if (canInput()) {
+      <p-button class="input-link" label="Input Temuan" icon="pi pi-camera" size="small" routerLink="/temuan/baru" />
+    }
+  </div>
+
+  <div class="tiles" [class.opacity-60]="loading()">
+    <div class="card tile">
+      <div>
+        <span class="tile-label">Temuan</span>
+        <div class="tile-value">{{ totals().total }}</div>
+      </div>
+      <span class="tile-icon"><i class="pi pi-flag"></i></span>
+    </div>
+    <div class="card tile">
+      <div>
+        <span class="tile-label">Close</span>
+        <div class="tile-value">{{ percent(totals().percentClosed) }}</div>
+        <span class="tile-note">{{ totals().closed }} dari {{ totals().total }}</span>
+      </div>
+      <span class="tile-icon"><i class="pi pi-check-circle"></i></span>
+    </div>
+    <div class="card tile">
+      <div>
+        <span class="tile-label">Belum close</span>
+        <div class="tile-value">{{ totals().open }}</div>
+      </div>
+      <span class="tile-icon"><i class="pi pi-clock"></i></span>
+    </div>
+    <div class="card tile">
+      <div>
+        <span class="tile-label">Overdue</span>
+        <div class="tile-value">{{ totals().overdue }}</div>
+      </div>
+      <span class="tile-icon" [class.alert]="totals().overdue > 0"><i class="pi pi-exclamation-triangle"></i></span>
+    </div>
+    <div class="card tile">
+      <div>
+        <span class="tile-label">Perbaikan tepat waktu</span>
+        <div class="tile-value">{{ percent(totals().percentOnTime) }}</div>
+        <span class="tile-note">dari temuan yang sudah close</span>
+      </div>
+      <span class="tile-icon"><i class="pi pi-stopwatch"></i></span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-12 gap-6 mb-6">
+    <div class="col-span-12 xl:col-span-7">
+      <div class="card h-full">
+        <div class="card-title">Temuan dan Close per Bulan, {{ year() }}</div>
+        <app-monthly-chart class="main-chart" [data]="monthly()" [year]="year()" />
+      </div>
+    </div>
+
+    <div class="col-span-12 xl:col-span-5">
+      <div class="card">
+        <div class="card-title">Status Temuan</div>
+        @for (item of statuses(); track item.status) {
+          <div class="hbar-row">
+            <span>{{ statusLabel(item.status) }}</span>
+            <span class="hbar-track"><i class="hbar" [style.width.%]="item.share"></i></span>
+            <span class="hbar-value">{{ item.total }}</span>
+          </div>
+        }
+      </div>
+
+      @if (showGenba()) {
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Genba {{ currentMonthName }} {{ currentYear }}</div>
+            <p-button label="Jadwal" [text]="true" size="small" routerLink="/temuan/jadwal" />
+          </div>
+          <app-data-grid [rows]="genbaNow()" [columns]="genbaColumns" [actions]="genbaActions" [rowId]="genbaRowId" [pageSize]="0" />
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="section-head">
+    <div class="card-title mb-0!">Temuan per Plant</div>
+    <div class="legend">
+      <span class="key"><i class="swatch total"></i>Temuan</span>
+      <span class="key"><i class="swatch closed"></i>Close</span>
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-6 mb-6">
+    @for (panel of panels(); track panel.plantId) {
+      <div class="col-span-12 xl:col-span-6">
+        <div class="card h-full">
+          <div class="card-head">
+            <div class="card-title">{{ panel.plantName }}</div>
+            <span class="panel-sum">
+              {{ panel.totals.closed }} close dari {{ panel.totals.total }} · <b>{{ percent(panel.totals.percentClosed) }}</b>
+              @if (panel.totals.overdue) {
+                · {{ panel.totals.overdue }} overdue
+              }
+            </span>
+          </div>
+          <div class="grid grid-cols-12 gap-6">
+            @for (chart of panel.charts; track chart.type) {
+              <div [class]="panel.charts.length > 1 ? 'col-span-12 md:col-span-6' : 'col-span-12'">
+                <div class="chart-head">
+                  <b>{{ chart.type }}</b>
+                  <span>{{ chart.totals.closed }}/{{ chart.totals.total }} · {{ percent(chart.totals.percentClosed) }}</span>
+                </div>
+                <app-monthly-chart [data]="chart.monthly" [year]="year()" [compact]="true" [scaleMax]="chart.scaleMax" />
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    } @empty {
+      @if (!loading()) {
+        <div class="col-span-12"><p class="empty-state">Belum ada temuan di tahun ini.</p></div>
+      }
+    }
+  </div>
+
+  <div class="grid grid-cols-12 gap-6">
+    <div class="col-span-12 xl:col-span-6">
+      <div class="card h-full">
+        <div class="card-title">Per Departemen</div>
+        <app-data-grid
+          [rows]="departments()"
+          [columns]="deptColumns"
+          [actions]="deptActions"
+          [rowId]="deptRowId"
+          [pageSize]="0"
+          [loading]="loading()"
+          emptyMessage="Belum ada temuan di tahun ini." />
+      </div>
+    </div>
+
+    <div class="col-span-12 xl:col-span-6">
+      <div class="card h-full">
+        <div class="card-head">
+          <div class="card-title">Overdue Terlama</div>
+          <p-button label="Daftar Temuan" [text]="true" size="small" routerLink="/temuan" />
+        </div>
+        <app-data-grid
+          [rows]="overdue()"
+          [columns]="overdueColumns"
+          [actions]="overdueActions"
+          [rowId]="overdueRowId"
+          [pageSize]="10"
+          [loading]="loading()"
+          emptyMessage="Tidak ada temuan overdue." />
+        @if (overdueHidden() > 0) {
+          <p class="caption mt-3">Ditampilkan 100 terlama; {{ overdueHidden() }} temuan overdue lainnya ada di Daftar Temuan.</p>
+        }
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="card">
+    <div class="card-title">Selamat datang, {{ user()?.displayName }}</div>
+    <p class="mb-4">Akun Anda belum punya hak melihat temuan. Minta admin HSE mengatur peran Anda.</p>
+    @if (canInput()) {
+      <p-button label="Input Temuan" icon="pi pi-camera" routerLink="/temuan/baru" />
+    }
+  </div>
+}

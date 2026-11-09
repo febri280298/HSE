@@ -1,0 +1,157 @@
+<p-button class="back" label="Daftar Temuan" icon="pi pi-angle-left" [text]="true" size="small" routerLink="/temuan" />
+
+@if (error()) {
+  <p-message severity="error" role="alert">{{ error() }}</p-message>
+}
+
+@if (detail(); as d) {
+  <div class="grid grid-cols-12 gap-6">
+    <div class="col-span-12 xl:col-span-8">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">{{ d.number }}</div>
+          <span>
+            <span class="chip" [class]="status()?.tone">{{ status()?.label }}</span>
+            @if (d.isOverdue) {
+              <span class="chip danger">Overdue</span>
+            }
+          </span>
+        </div>
+
+        <p class="detail-text">{{ d.detail }}</p>
+        <dl class="detail-grid info">
+          <div><dt>Plant</dt><dd>{{ d.plantName }}</dd></div>
+          <div><dt>Tanggal patrol</dt><dd>{{ d.patrolDate | date: 'dd/MM/yyyy' }}</dd></div>
+          <div><dt>Tipe</dt><dd>{{ d.type }}</dd></div>
+          <div><dt>Area</dt><dd>{{ d.areaName }}</dd></div>
+          <div><dt>Departemen</dt><dd>{{ d.deptName ?? 'Belum ditentukan' }}</dd></div>
+          <div><dt>PIC</dt><dd>{{ d.picName ?? 'Belum ditentukan' }}</dd></div>
+          <div><dt>Due date</dt><dd>{{ d.dueDate ? (d.dueDate | date: 'dd/MM/yyyy') : 'Belum ditentukan' }}</dd></div>
+          <div><dt>Dicatat oleh</dt><dd>{{ d.createdByName }}</dd></div>
+          @if (d.repairedByName) {
+            <div><dt>Dikerjakan oleh</dt><dd>{{ d.repairedByName }}</dd></div>
+          }
+        </dl>
+
+        <h6>Foto temuan</h6>
+        <div class="photos">
+          @for (photo of beforePhotos(); track photo.path; let i = $index) {
+            <button type="button" class="photo" (click)="preview(beforePhotos(), i)" [attr.aria-label]="'Perbesar ' + photo.fileName">
+              <img [src]="photo.url" [alt]="photo.fileName" />
+            </button>
+          }
+        </div>
+
+        @if (d.countermeasure || afterPhotos().length) {
+          <h6>Sesudah perbaikan</h6>
+          @if (d.countermeasure) {
+            <p>{{ d.countermeasure }}</p>
+          }
+          <div class="photos">
+            @for (photo of afterPhotos(); track photo.path; let i = $index) {
+              <button type="button" class="photo" (click)="preview(afterPhotos(), i)" [attr.aria-label]="'Perbesar ' + photo.fileName">
+                <img [src]="photo.url" [alt]="photo.fileName" />
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      @if (d.canAssign) {
+        <div class="card">
+          <div class="card-title">{{ d.deptId ? 'Ubah Penugasan' : 'Tentukan Departemen' }}</div>
+          <div class="form-grid">
+            <div class="field">
+              <span class="label">Departemen</span>
+              <p-select [options]="deptChoices()" optionLabel="label" optionValue="value" placeholder="Pilih departemen"
+                        ariaLabel="Departemen" [fluid]="true" [ngModel]="assignDept()" (ngModelChange)="changeDept($event)" />
+            </div>
+            <div class="field">
+              <span class="label">PIC</span>
+              <p-select [options]="picOptions()" optionLabel="displayName" optionValue="userId" placeholder="Pilih PIC"
+                        ariaLabel="PIC" [fluid]="true" [disabled]="!assignDept()"
+                        [ngModel]="assignPic()" (ngModelChange)="assignPic.set($event)" />
+              @if (assignDept() && !picOptions().length) {
+                <p class="caption status-warning">Belum ada user departemen ini di plant {{ d.plantName }}.</p>
+              }
+            </div>
+            <div class="field">
+              <label class="label" for="assignDue">Due date</label>
+              <input pInputText type="date" id="assignDue" class="w-full" [min]="d.patrolDate"
+                     [ngModel]="assignDue()" (ngModelChange)="assignDue.set($event)" />
+            </div>
+          </div>
+          <div class="form-actions">
+            <p-button icon="pi pi-send" [label]="d.deptId ? 'Simpan Perubahan' : 'Tugaskan ke Departemen'"
+                      [disabled]="busy() || !assignDept() || !assignPic() || !assignDue()" (onClick)="assign()" />
+          </div>
+        </div>
+      }
+
+      @if (d.status === 'NotClose' && d.verifyNote) {
+        <p-message severity="error"><b>Ditolak oleh {{ d.verifiedByName }}:</b> {{ d.verifyNote }}</p-message>
+      }
+
+      @if (d.canRepair) {
+        <div class="card">
+          <div class="card-title">Isi Perbaikan</div>
+          <div class="field">
+            <label class="label" for="countermeasure">Countermeasure</label>
+            <textarea pTextarea id="countermeasure" rows="3" maxlength="1000" class="w-full"
+                      placeholder="Tindakan yang sudah dilakukan"
+                      [ngModel]="countermeasure()" (ngModelChange)="countermeasure.set($event)"></textarea>
+          </div>
+          <div class="field">
+            <span class="label">Foto sesudah perbaikan</span>
+            <app-image-uploader
+              [ngModel]="repairPhotos()"
+              (ngModelChange)="repairPhotos.set($event)"
+              category="perbaikan"
+              galleryMode="desktop"
+              [stamp]="'Perbaikan ' + d.number"
+              [maxFiles]="3"
+              (uploadingChange)="uploading.set($event)" />
+          </div>
+          <div class="form-actions">
+            <p-button icon="pi pi-check" label="Ajukan Selesai" [disabled]="busy() || uploading()" (onClick)="saveRepair(true)" />
+            <p-button label="Simpan Progres" [text]="true" severity="secondary" [disabled]="busy() || uploading()" (onClick)="saveRepair(false)" />
+          </div>
+        </div>
+      }
+
+      @if (d.canVerify) {
+        <div class="card">
+          <div class="card-title">Verifikasi Perbaikan</div>
+          <div class="field">
+            <label class="label" for="verifyNote">Catatan (wajib kalau ditolak)</label>
+            <textarea pTextarea id="verifyNote" rows="2" maxlength="500" class="w-full"
+                      [ngModel]="verifyNote()" (ngModelChange)="verifyNote.set($event)"></textarea>
+          </div>
+          <div class="form-actions">
+            <p-button icon="pi pi-check-circle" label="Setujui & Close" severity="success" [disabled]="busy()" (onClick)="verify(true)" />
+            <p-button label="Tolak" severity="danger" [outlined]="true" [disabled]="busy()" (onClick)="verify(false)" />
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="col-span-12 xl:col-span-4">
+      <div class="card">
+        <div class="card-title">Riwayat</div>
+        <ol class="timeline">
+          @for (event of d.events; track $index) {
+            <li>
+              <b>{{ eventLabel(event.action) }}</b>
+              <span class="meta">{{ event.userName }} · {{ event.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+              @if (event.note) {
+                <span class="note">{{ event.note }}</span>
+              }
+            </li>
+          }
+        </ol>
+      </div>
+    </div>
+  </div>
+} @else if (loading()) {
+  <div class="card loading-card"><i class="pi pi-spin pi-spinner"></i></div>
+}

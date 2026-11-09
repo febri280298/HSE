@@ -1,0 +1,55 @@
+<div class="dialog-frame">
+  <div class="dialog-head">
+    <span>{{ role ? 'Ubah Peran' : 'Tambah Peran' }}</span>
+    <p-button icon="pi pi-times" [text]="true" [rounded]="true" severity="secondary" ariaLabel="Tutup" (onClick)="cancel()" />
+  </div>
+
+  <div class="dialog-body">
+    @if (error()) {
+      <p-message severity="error" role="alert">{{ error() }}</p-message>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="save()" id="role-form" novalidate>
+      <div class="field">
+        <label class="label" for="role-name">Nama peran</label>
+        <input pInputText id="role-name" formControlName="name" class="w-full" placeholder="Contoh: Patroller"
+               [class.p-invalid]="fieldErrors()['name'] || (form.controls.name.invalid && form.controls.name.touched)" />
+        @if (fieldErrors()['name']; as message) {
+          <p class="caption status-danger">{{ message }}</p>
+        } @else if (form.controls.name.invalid && form.controls.name.touched) {
+          <p class="caption status-danger">Nama peran 2-50 karakter.</p>
+        }
+      </div>
+
+      <div class="field">
+        <label class="label" for="role-description">Keterangan (opsional)</label>
+        <input pInputText id="role-description" formControlName="description" class="w-full"
+               placeholder="Contoh: Atasan yang melakukan genba safety patrol" />
+      </div>
+    </form>
+
+    <span class="label">Hak akses</span>
+    @for (group of groups; track group.name) {
+      <div class="group">
+        <div class="group-title">
+          <p-checkbox [binary]="true" [inputId]="'group-' + $index" [indeterminate]="groupState(group) === 'some'"
+                      [ngModel]="groupState(group) === 'all'" (ngModelChange)="toggleGroup(group, $event)" />
+          <label [for]="'group-' + $index"><b>{{ group.name }}</b></label>
+        </div>
+        @for (permission of group.items; track permission.code) {
+          <div class="permission">
+            <p-checkbox [binary]="true" [inputId]="'perm-' + permission.code"
+                        [ngModel]="isChecked(permission.code)" (ngModelChange)="toggle([permission.code], $event)" />
+            <label [for]="'perm-' + permission.code">{{ permission.name }}</label>
+            <span class="hint">{{ permission.description }}</span>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="dialog-foot">
+    <p-button label="Batal" [text]="true" severity="secondary" (onClick)="cancel()" />
+    <button pButton type="submit" form="role-form" [disabled]="busy()">{{ busy() ? 'Menyimpan…' : 'Simpan' }}</button>
+  </div>
+</div>

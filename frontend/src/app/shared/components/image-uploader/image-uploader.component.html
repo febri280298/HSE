@@ -1,0 +1,82 @@
+<div class="uploader" [class.disabled]="disabled()">
+  <!-- Tampilan HP: satu tombol kamera besar. -->
+  <button type="button" class="camera-tile" (click)="openCamera()" [disabled]="disabled() || isFull()">
+    <span class="camera-icon"><i class="pi pi-camera"></i></span>
+    <span class="camera-text">
+      <b>{{ isFull() ? 'Foto sudah cukup' : 'Ambil Foto' }}</b>
+      <small>Maksimal {{ maxFiles() }} foto</small>
+    </span>
+    <span class="camera-count">{{ items().length }}/{{ maxFiles() }}</span>
+  </button>
+
+  <div class="actions">
+    <p-button label="Ambil Foto" icon="pi pi-camera" size="small" [disabled]="disabled() || isFull()" (onClick)="openCamera()" />
+    @if (showGallery()) {
+      <p-button label="Pilih File" icon="pi pi-image" size="small" severity="secondary" [outlined]="true"
+                [disabled]="disabled() || isFull()" (onClick)="openFilePicker()" />
+    }
+    <span class="counter">{{ items().length }} / {{ maxFiles() }} foto</span>
+  </div>
+
+  @if (showGallery() && !isFull()) {
+    <div class="dropzone" role="button" tabindex="0"
+         [class.dragging]="dragging()"
+         (click)="openFilePicker()"
+         (keydown.enter)="openFilePicker()"
+         (keydown.space)="$event.preventDefault(); openFilePicker()"
+         (dragover)="onDragOver($event)"
+         (dragleave)="onDragLeave()"
+         (drop)="onDrop($event)">
+      <i class="pi pi-cloud-upload"></i>
+      <span>Tarik foto ke sini atau klik untuk memilih</span>
+      <small>JPG, PNG, atau WebP · otomatis diperkecil sebelum dikirim</small>
+    </div>
+  }
+
+  @if (items().length) {
+    <div class="thumbs">
+      @for (item of items(); track item.key) {
+        <figure class="thumb" [class.error]="item.status === 'error'">
+          @if (item.previewUrl) {
+            <img [src]="item.previewUrl" [alt]="item.fileName" (click)="preview(item)" />
+          } @else {
+            <div class="placeholder">
+              <i class="pi" [class.pi-spin]="item.status === 'processing'" [class.pi-spinner]="item.status === 'processing'" [class.pi-image]="item.status !== 'processing'"></i>
+            </div>
+          }
+
+          @switch (item.status) {
+            @case ('uploading') {
+              <div class="overlay">
+                <div class="progress" role="progressbar" [attr.aria-valuenow]="item.percent" aria-valuemin="0" aria-valuemax="100">
+                  <i [style.width.%]="item.percent"></i>
+                </div>
+              </div>
+            }
+            @case ('error') {
+              <div class="overlay error">
+                <span>{{ item.error }}</span>
+                @if (item.blob) {
+                  <p-button label="Coba lagi" severity="danger" size="small" (onClick)="retry(item)" />
+                }
+              </div>
+            }
+            @case ('done') {
+              <i class="pi pi-check-circle ok" aria-label="Tersimpan"></i>
+            }
+          }
+
+          <button class="remove" type="button" (click)="remove(item)" [disabled]="disabled()" [attr.aria-label]="'Hapus ' + item.fileName">
+            <i class="pi pi-times"></i>
+          </button>
+          <figcaption>{{ item.fileName }}</figcaption>
+        </figure>
+      }
+    </div>
+  }
+
+  <!-- File dari galeri/PC -->
+  <input #fileInput type="file" hidden accept="image/jpeg,image/png,image/webp,image/*" multiple (change)="onFilesSelected($event)" />
+  <!-- Cadangan: kamera bawaan HP kalau kamera di dalam web tidak bisa dipakai (mis. bukan HTTPS) -->
+  <input #nativeCameraInput type="file" hidden accept="image/*" capture="environment" (change)="onFilesSelected($event)" />
+</div>

@@ -1,0 +1,26 @@
+# .NET
+bin/
+obj/
+*.user
+.vs/
+TestResults/
+
+# Hasil build Angular yang ditaruh di backend
+backend/src/HseSystem.Api/wwwroot/
+
+# Foto hasil upload saat development (di server, foto disimpan di luar folder aplikasi)
+backend/src/HseSystem.Api/App_Data/
+
+# Frontend
+frontend/node_modules/
+frontend/.angular/
+frontend/dist/
+*.tsbuildinfo
+
+# Cadangan tampilan lama, bukan bagian dari sistem
+frontend-lama-nebular/
+
+# Lain-lain
+*.log
+.env
+.env.*

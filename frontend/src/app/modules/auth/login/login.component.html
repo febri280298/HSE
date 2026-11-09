@@ -1,0 +1,30 @@
+<div class="flex items-center justify-center min-h-screen bg-surface-50 dark:bg-surface-950 p-4">
+  <div class="login-frame">
+    <div class="login-card bg-surface-0 dark:bg-surface-900">
+      <div class="text-center mb-8">
+        <app-brand-mark class="w-14 mb-4" />
+        <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-2">HSE System</div>
+        <span class="text-muted-color">PT. Bonecom Tricom</span>
+      </div>
+
+      @if (sesi() === 'habis' && !error()) {
+        <p-message severity="warn">Sesi login berakhir. Silakan masuk lagi.</p-message>
+      }
+      @if (error()) {
+        <p-message severity="error" role="alert">{{ error() }}</p-message>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <label for="username" class="block text-surface-900 dark:text-surface-0 font-medium mb-2">Username</label>
+        <input pInputText id="username" formControlName="username" class="w-full mb-6"
+               autocomplete="username" autocapitalize="none" spellcheck="false" />
+
+        <label for="password" class="block text-surface-900 dark:text-surface-0 font-medium mb-2">Password</label>
+        <p-password inputId="password" formControlName="password" autocomplete="current-password"
+                    [feedback]="false" [toggleMask]="true" [fluid]="true" styleClass="mb-8" />
+
+        <p-button type="submit" [label]="busy() ? 'Memeriksa…' : 'Masuk'" [loading]="busy()" [fluid]="true" />
+      </form>
+    </div>
+  </div>
+</div>

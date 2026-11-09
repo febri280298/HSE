@@ -1,0 +1,75 @@
+:host {
+  display: block;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+
+.loading-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 16rem;
+  font-size: 2rem;
+  color: var(--primary-color);
+}
+
+.detail-text {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.info {
+  margin: 1rem 0 1.5rem;
+}
+
+h6 {
+  margin: 1.25rem 0 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 0.75rem;
+}
+
+.photo {
+  padding: 0;
+  border-radius: var(--content-border-radius);
+  overflow: hidden;
+  cursor: zoom-in;
+
+  img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+}
+
+.timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    flex-direction: column;
+    padding: 0 0 1rem 1rem;
+    border-left: 2px solid var(--surface-border);
+  }
+
+  .meta {
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+  }
+
+  .note {
+    margin-top: 0.25rem;
+    overflow-wrap: anywhere;
+  }
+}

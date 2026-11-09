@@ -1,0 +1,91 @@
+<div class="dialog-frame">
+  <div class="dialog-head">
+    <span class="title">
+      {{ detail()?.number ?? 'Detail Temuan' }}
+      @if (status(); as s) {
+        <span class="chip" [class]="s.tone">{{ s.label }}</span>
+      }
+      @if (detail()?.isOverdue) {
+        <span class="chip danger">Overdue</span>
+      }
+    </span>
+    <p-button icon="pi pi-times" [text]="true" [rounded]="true" severity="secondary" ariaLabel="Tutup" (onClick)="ref.close()" />
+  </div>
+
+  <div class="dialog-body">
+    @if (error()) {
+      <p-message severity="error" role="alert">{{ error() }}</p-message>
+    }
+
+    @if (detail(); as d) {
+      <dl class="detail-grid">
+        <div class="wide"><dt>Detail temuan</dt><dd>{{ d.detail }}</dd></div>
+        <div><dt>Plant</dt><dd>{{ d.plantName }}</dd></div>
+        <div><dt>Tanggal patrol</dt><dd>{{ d.patrolDate | date: 'dd/MM/yyyy' }}</dd></div>
+        <div><dt>Tipe</dt><dd>{{ d.type }}</dd></div>
+        <div><dt>Area</dt><dd>{{ d.areaName }}</dd></div>
+        <div><dt>Departemen</dt><dd>{{ d.deptName ?? 'Belum ditentukan' }}</dd></div>
+        <div><dt>PIC</dt><dd>{{ d.picName ?? 'Belum ditentukan' }}</dd></div>
+        <div><dt>Due date</dt><dd>{{ d.dueDate ? (d.dueDate | date: 'dd/MM/yyyy') : 'Belum ditentukan' }}</dd></div>
+        <div><dt>Dicatat oleh</dt><dd>{{ d.createdByName }}</dd></div>
+        @if (d.repairedByName) {
+          <div><dt>Dikerjakan oleh</dt><dd>{{ d.repairedByName }}</dd></div>
+        }
+        @if (d.countermeasure) {
+          <div class="wide"><dt>Countermeasure</dt><dd>{{ d.countermeasure }}</dd></div>
+        }
+        @if (d.verifyNote) {
+          <div class="wide"><dt>Catatan pemeriksa</dt><dd>{{ d.verifyNote }}</dd></div>
+        }
+      </dl>
+
+      <div class="photo-compare">
+        <section>
+          <h6>Foto temuan</h6>
+          <div class="photos">
+            @for (photo of before(); track photo.path; let i = $index) {
+              <button type="button" class="photo" (click)="preview(before(), i)" [attr.aria-label]="'Perbesar ' + photo.fileName">
+                <img [src]="photo.url" [alt]="photo.fileName" />
+              </button>
+            }
+          </div>
+        </section>
+
+        @if (after().length) {
+          <section>
+            <h6>Sesudah perbaikan</h6>
+            <div class="photos">
+              @for (photo of after(); track photo.path; let i = $index) {
+                <button type="button" class="photo" (click)="preview(after(), i)" [attr.aria-label]="'Perbesar ' + photo.fileName">
+                  <img [src]="photo.url" [alt]="photo.fileName" />
+                </button>
+              }
+            </div>
+          </section>
+        }
+      </div>
+
+      <h6>Riwayat</h6>
+      <ol class="history">
+        @for (event of d.events; track $index) {
+          <li>
+            <b>{{ event.action }}</b>
+            <span>{{ event.userName }} · {{ event.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+            @if (event.note) {
+              <p>{{ event.note }}</p>
+            }
+          </li>
+        }
+      </ol>
+    } @else if (!error()) {
+      <div class="loading"><i class="pi pi-spin pi-spinner text-3xl!"></i></div>
+    }
+  </div>
+
+  @if (detail()) {
+    <div class="dialog-foot">
+      <p-button label="Tutup" [text]="true" severity="secondary" (onClick)="ref.close()" />
+      <p-button [label]="needsAction() ? 'Proses Temuan' : 'Halaman Lengkap'" [severity]="needsAction() ? 'primary' : 'secondary'" (onClick)="openPage()" />
+    </div>
+  }
+</div>

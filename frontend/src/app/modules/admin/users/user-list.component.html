@@ -1,0 +1,23 @@
+<div class="card">
+  <div class="card-head">
+    <div class="card-title">Pengguna</div>
+    <p-button label="Tambah Pengguna" icon="pi pi-user-plus" size="small" [disabled]="!canAdd()" (onClick)="openForm()" />
+  </div>
+
+  <div class="toolbar">
+    <p-iconfield>
+      <p-inputicon class="pi pi-search" />
+      <input pInputText type="search" class="w-full" placeholder="Cari di semua kolom"
+             [value]="search()" (input)="onSearch($event)" aria-label="Cari pengguna" />
+    </p-iconfield>
+  </div>
+
+  <app-data-grid
+    [rows]="users()"
+    [columns]="columns()"
+    [actions]="actions"
+    [loading]="loading()"
+    [quickFilter]="search()"
+    [rowId]="rowId"
+    emptyMessage="Belum ada pengguna." />
+</div>

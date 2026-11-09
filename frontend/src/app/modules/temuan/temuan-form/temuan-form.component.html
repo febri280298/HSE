@@ -1,0 +1,96 @@
+<div class="page">
+  <div class="card-head desktop-only">
+    <div class="card-title">Input Temuan Safety &amp; 5R Patrol</div>
+    <p-button label="Daftar Temuan" icon="pi pi-list" [text]="true" size="small" routerLink="/temuan" />
+  </div>
+
+  @if (error()) {
+    <p-message severity="error" role="alert">{{ error() }}</p-message>
+  }
+  @if (!loading() && !options().plants.length) {
+    <p-message severity="warn">Akun Anda belum terdaftar di plant mana pun. Hubungi admin HSE.</p-message>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <section class="sec">
+      <h2 class="sec-title"><i class="pi pi-map-marker"></i>Lokasi &amp; Tanggal</h2>
+      <div class="form-grid">
+        <div class="field">
+          <span class="label">Plant</span>
+          <p-select formControlName="plantId" [options]="options().plants" optionLabel="name" optionValue="plantId"
+                    placeholder="Pilih plant" ariaLabel="Plant" [fluid]="true" (onChange)="selectPlant($event.value)" />
+        </div>
+        <div class="field">
+          <label class="label" for="patrolDate">Tanggal patrol</label>
+          <input pInputText type="date" id="patrolDate" formControlName="patrolDate" class="w-full" [max]="maxDate"
+                 [class.p-invalid]="showError('patrolDate')" />
+          @if (fieldErrors()['patrolDate']; as message) {
+            <p class="caption status-danger">{{ message }}</p>
+          } @else if (plannedGenba(); as planned) {
+            <p class="caption">Jadwal genba bulan ini: {{ planned | date: 'dd/MM/yyyy' }}</p>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2 class="sec-title"><i class="pi pi-camera"></i>Foto Temuan</h2>
+      <div class="field">
+        <span class="label desktop-only">Foto Temuan</span>
+        <app-image-uploader
+          formControlName="fotoTemuan"
+          category="temuan"
+          galleryMode="desktop"
+          stamp="Temuan Safety Patrol"
+          [maxFiles]="3"
+          (uploadingChange)="uploading.set($event)" />
+        @if (fieldErrors()['photos']; as message) {
+          <p class="caption status-danger">{{ message }}</p>
+        } @else if (showError('fotoTemuan') && !uploading()) {
+          <p class="caption status-danger">Ambil minimal satu foto temuan.</p>
+        }
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2 class="sec-title"><i class="pi pi-file-edit"></i>Detail Temuan</h2>
+      <div class="field">
+        <label class="label" for="detail">Apa yang ditemukan?</label>
+        <textarea pTextarea id="detail" rows="3" formControlName="detail" class="w-full"
+                  placeholder="Contoh: Barang tidak pada tempatnya" [class.p-invalid]="showError('detail')"></textarea>
+        @if (showError('detail')) {
+          <p class="caption status-danger">{{ fieldErrors()['detail'] || 'Detail temuan wajib diisi (maks. 500 karakter).' }}</p>
+        }
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <span class="label">Area</span>
+          <p-select formControlName="areaId" [options]="options().areas" optionLabel="name" optionValue="areaId"
+                    placeholder="Pilih area" ariaLabel="Area" [fluid]="true" [class.p-invalid]="showError('areaId')" />
+          @if (form.controls.plantId.value && !options().areas.length) {
+            <p class="caption status-warning">
+              Plant ini belum punya daftar area.
+              @if (canManageMaster()) {
+                <a routerLink="/admin/master" class="underline">Tambahkan di Master Data</a>.
+              } @else {
+                Minta admin HSE menambahkannya.
+              }
+            </p>
+          } @else if (showError('areaId')) {
+            <p class="caption status-danger">{{ fieldErrors()['areaId'] || 'Pilih area.' }}</p>
+          }
+        </div>
+        <div class="field">
+          <span class="label">Tipe</span>
+          <p-selectbutton formControlName="tipe" [options]="tipeOptions" [allowEmpty]="false" [fluid]="true" ariaLabel="Tipe" />
+        </div>
+      </div>
+    </section>
+
+    <div class="submit-bar">
+      <p-button type="submit" icon="pi pi-check" [disabled]="uploading() || saving()" [loading]="saving()"
+                [label]="uploading() ? 'Menunggu upload foto…' : saving() ? 'Menyimpan…' : 'Simpan Temuan'" />
+    </div>
+  </form>
+</div>

@@ -1,0 +1,123 @@
+<div class="dialog-frame">
+  <div class="dialog-head">
+    <span>{{ user ? 'Ubah Pengguna' : 'Tambah Pengguna' }}</span>
+    <p-button icon="pi pi-times" [text]="true" [rounded]="true" severity="secondary" ariaLabel="Tutup" (onClick)="cancel()" />
+  </div>
+
+  <div class="dialog-body">
+    @if (error()) {
+      <p-message severity="error" role="alert">{{ error() }}</p-message>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="save()" id="user-form" novalidate>
+      <div class="form-grid">
+        <div class="field">
+          <label class="label" for="user-username">Username</label>
+          <input pInputText id="user-username" formControlName="username" class="w-full" autocomplete="off"
+                 autocapitalize="none" spellcheck="false" placeholder="mis. budi.santoso"
+                 [class.p-invalid]="fieldErrors()['username'] || (form.controls.username.invalid && form.controls.username.touched)" />
+          @if (fieldErrors()['username']; as message) {
+            <p class="caption status-danger">{{ message }}</p>
+          } @else if (form.controls.username.invalid && form.controls.username.touched) {
+            <p class="caption status-danger">3-50 karakter: huruf, angka, titik, minus, garis bawah.</p>
+          }
+        </div>
+
+        <div class="field">
+          <label class="label" for="user-name">Nama lengkap</label>
+          <input pInputText id="user-name" formControlName="displayName" class="w-full"
+                 [class.p-invalid]="fieldErrors()['displayName'] || (form.controls.displayName.invalid && form.controls.displayName.touched)" />
+          @if (fieldErrors()['displayName']; as message) {
+            <p class="caption status-danger">{{ message }}</p>
+          }
+        </div>
+
+        <div class="field">
+          <span class="label">Departemen</span>
+          <p-select formControlName="deptId" [options]="deptChoices" optionLabel="label" optionValue="value"
+                    ariaLabel="Departemen" [fluid]="true" appendTo="body" />
+          @if (fieldErrors()['deptId']; as message) {
+            <p class="caption status-danger">{{ message }}</p>
+          } @else {
+            <p class="caption">Wajib untuk pengguna yang mengisi perbaikan.</p>
+          }
+        </div>
+
+        <div class="field">
+          <label class="label" for="user-email">Email (opsional)</label>
+          <input pInputText type="email" id="user-email" formControlName="email" class="w-full"
+                 [class.p-invalid]="fieldErrors()['email'] || (form.controls.email.invalid && form.controls.email.touched)" />
+          @if (fieldErrors()['email']; as message) {
+            <p class="caption status-danger">{{ message }}</p>
+          }
+        </div>
+
+        @if (!user) {
+          <div class="field">
+            <label class="label" for="user-password">Password sementara</label>
+            <p-inputgroup>
+              <input pInputText id="user-password" formControlName="password" autocomplete="off"
+                     [class.p-invalid]="fieldErrors()['password']" />
+              <p-button icon="pi pi-refresh" severity="secondary" ariaLabel="Buat password acak" (onClick)="newPassword()" />
+            </p-inputgroup>
+            @if (fieldErrors()['password']; as message) {
+              <p class="caption status-danger">{{ message }}</p>
+            } @else {
+              <p class="caption">Berikan ke pengguna; wajib diganti saat login pertama.</p>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="field">
+        <span class="switch">
+          <p-toggleswitch formControlName="isActive" inputId="user-active" />
+          <label for="user-active">Akun aktif</label>
+        </span>
+        @if (isSelf) {
+          <p class="caption">Akun sendiri tidak bisa dinonaktifkan.</p>
+        }
+        @if (fieldErrors()['isActive']; as message) {
+          <p class="caption status-danger">{{ message }}</p>
+        }
+      </div>
+    </form>
+
+    <div class="field">
+      <span class="label">Peran</span>
+      <div class="choices">
+        @for (role of options.roles; track role.roleId) {
+          <span class="choice">
+            <p-checkbox [binary]="true" [inputId]="'user-role-' + role.roleId"
+                        [ngModel]="roleIds().has(role.roleId)" (ngModelChange)="toggleRole(role.roleId, $event)" />
+            <label [for]="'user-role-' + role.roleId">{{ role.name }}</label>
+          </span>
+        }
+      </div>
+      @if (fieldErrors()['roleIds']; as message) {
+        <p class="caption status-danger">{{ message }}</p>
+      }
+    </div>
+
+    <div class="field mb-0!">
+      <span class="label">Plant</span>
+      <div class="choices">
+        @for (plant of options.plants; track plant.plantId) {
+          <span class="choice">
+            <p-checkbox [binary]="true" [inputId]="'user-plant-' + plant.plantId"
+                        [ngModel]="plantIds().has(plant.plantId)" (ngModelChange)="togglePlant(plant.plantId, $event)" />
+            <label [for]="'user-plant-' + plant.plantId">{{ plant.name }}</label>
+          </span>
+        }
+      </div>
+      @if (fieldErrors()['plantIds']; as message) {
+        <p class="caption status-danger">{{ message }}</p>
+      }
+    </div>
+  </div>
+
+  <div class="dialog-foot">
+    <p-button label="Batal" [text]="true" severity="secondary" (onClick)="cancel()" />
+    <button pButton type="submit" form="user-form" [disabled]="busy()">{{ busy() ? 'Menyimpan…' : 'Simpan' }}</button>
+  </div>
+</div>

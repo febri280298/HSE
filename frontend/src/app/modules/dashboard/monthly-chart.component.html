@@ -1,0 +1,49 @@
+@if (!compact()) {
+  <div class="legend">
+    <span class="key"><i class="swatch total"></i>Temuan</span>
+    <span class="key"><i class="swatch closed"></i>Close</span>
+  </div>
+}
+
+<div class="plot" (mouseleave)="active.set(null)">
+  <div class="grid" aria-hidden="true">
+    @for (tick of ticks(); track tick) {
+      <div class="line"><span>{{ tick }}</span></div>
+    }
+  </div>
+
+  <div class="bands">
+    @for (point of data(); track point.month) {
+      <div class="band" tabindex="0" role="img" [attr.aria-label]="label(point)"
+           (mouseenter)="active.set(point.month)" (focus)="active.set(point.month)" (blur)="active.set(null)">
+        <div class="bars">
+          <div class="bar total" [style.height]="height(point.total)">
+            @if (point.month === peakMonth()) {
+              <span class="cap">{{ point.total }}</span>
+            }
+          </div>
+          <div class="bar closed" [style.height]="height(point.closed)"></div>
+        </div>
+        <span class="month">{{ compact() ? monthNames[point.month - 1].charAt(0) : monthNames[point.month - 1] }}</span>
+      </div>
+    }
+
+    @if (activePoint(); as point) {
+      <div class="tooltip" role="status" [style]="tooltipStyle(point.month)">
+        <div class="title">{{ monthNames[point.month - 1] }} {{ year() }}</div>
+        <div class="tip-row"><i class="stroke total"></i><b>{{ point.total }}</b> Temuan</div>
+        <div class="tip-row"><i class="stroke closed"></i><b>{{ point.closed }}</b> Close</div>
+        <div class="tip-row muted"><b>{{ percent(point) }}</b> tertutup</div>
+      </div>
+    }
+  </div>
+</div>
+
+@if (!compact()) {
+  <details class="table-view" (toggle)="onToggle($event)">
+    <summary>Lihat data dalam tabel</summary>
+    @if (tableOpen()) {
+      <app-data-grid [rows]="data()" [columns]="tableColumns" [actions]="tableActions" [rowId]="tableRowId" [pageSize]="0" />
+    }
+  </details>
+}

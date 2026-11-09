@@ -1,0 +1,44 @@
+<div class="dialog-frame">
+  <div class="dialog-head">
+    <span>Ambil Foto</span>
+    <p-button icon="pi pi-times" [text]="true" [rounded]="true" severity="secondary" ariaLabel="Tutup kamera" (onClick)="cancel()" />
+  </div>
+
+  <div class="viewport">
+    <video #video playsinline muted [class.mirrored]="mirrored()" [class.hidden]="state() === 'captured' || state() === 'error'"></video>
+
+    @if (state() === 'starting') {
+      <i class="pi pi-spin pi-spinner starting"></i>
+    }
+
+    @if (state() === 'captured') {
+      <img [src]="photoUrl()" [class.mirrored]="mirrored()" alt="Hasil foto" />
+    }
+
+    @if (state() === 'error') {
+      <div class="error">
+        <i class="pi pi-exclamation-triangle"></i>
+        <p>{{ error() }}</p>
+      </div>
+    }
+  </div>
+
+  <div class="dialog-foot camera-foot">
+    @switch (state()) {
+      @case ('live') {
+        @if (canSwitch()) {
+          <p-button label="Ganti Kamera" icon="pi pi-sync" [text]="true" severity="secondary" (onClick)="switchCamera()" />
+        }
+        <p-button class="shutter" label="Jepret" icon="pi pi-camera" (onClick)="capture()" />
+      }
+      @case ('captured') {
+        <p-button label="Ulangi" icon="pi pi-refresh" [text]="true" severity="secondary" (onClick)="retake()" />
+        <p-button label="Pakai Foto" icon="pi pi-check" severity="success" (onClick)="usePhoto()" />
+      }
+      @case ('error') {
+        <p-button label="Coba Lagi" [text]="true" severity="secondary" (onClick)="start()" />
+        <p-button label="Pakai Kamera HP" icon="pi pi-mobile" (onClick)="useNativeCamera()" />
+      }
+    }
+  </div>
+</div>

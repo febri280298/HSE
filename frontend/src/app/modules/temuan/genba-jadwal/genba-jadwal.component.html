@@ -1,0 +1,23 @@
+<div class="card">
+  <div class="card-head">
+    <div class="card-title">Jadwal Genba</div>
+    <p-select size="small" [options]="years" ariaLabel="Tahun" [ngModel]="year()" (ngModelChange)="changeYear($event)" />
+  </div>
+
+  <p class="caption mb-4">
+    Genba dilakukan sebulan sekali di setiap plant.
+    @if (canEdit()) {
+      Klik sel tanggal untuk mengisi atau mengubah.
+    }
+  </p>
+
+  <app-data-grid
+    [rows]="rows()"
+    [columns]="columns()"
+    [actions]="actions"
+    [loading]="loading()"
+    [rowId]="rowId"
+    [rowClassRules]="rowClasses"
+    [pageSize]="0"
+    (cellChanged)="save($event)" />
+</div>

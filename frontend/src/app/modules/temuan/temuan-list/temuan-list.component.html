@@ -1,0 +1,65 @@
+<div class="card">
+  <div class="card-head">
+    <div class="card-title">Daftar Temuan <span class="count">{{ total() }}</span></div>
+    @if (canInput()) {
+      <p-button label="Input Temuan" icon="pi pi-camera" size="small" routerLink="/temuan/baru" />
+    }
+  </div>
+
+  <p-tabs class="tabs" [value]="tab()" [scrollable]="true" (valueChange)="selectTab($event)">
+    <p-tablist>
+      @for (item of tabs(); track item.value) {
+        <p-tab [value]="item.value">
+          {{ item.label }}<span class="tab-count" [class.active]="tab() === item.value">{{ item.count }}</span>
+        </p-tab>
+      }
+    </p-tablist>
+  </p-tabs>
+
+  <div class="filters">
+    <p-select size="small" [options]="plantChoices()" optionLabel="name" optionValue="plantId" ariaLabel="Plant"
+              [ngModel]="plantId()" (ngModelChange)="apply(setter(plantId, $event))" />
+    <p-select size="small" [options]="yearChoices" optionLabel="label" optionValue="value" ariaLabel="Tahun"
+              [ngModel]="year()" (ngModelChange)="apply(setter(year, $event))" />
+    <p-select size="small" [options]="monthChoices" optionLabel="label" optionValue="value" ariaLabel="Bulan"
+              [ngModel]="month()" (ngModelChange)="apply(setter(month, $event))" />
+    <p-select size="small" [options]="typeChoices" optionLabel="label" optionValue="value" ariaLabel="Tipe"
+              [ngModel]="type()" (ngModelChange)="apply(setter(type, $event))" />
+
+    <span class="check">
+      <p-checkbox inputId="f-overdue" [binary]="true" [ngModel]="overdue()" (ngModelChange)="apply(setter(overdue, $event))" />
+      <label for="f-overdue">Overdue</label>
+    </span>
+    @if (hasDept()) {
+      <span class="check">
+        <p-checkbox inputId="f-mine" [binary]="true" [ngModel]="mine()" (ngModelChange)="apply(setter(mine, $event))" />
+        <label for="f-mine">Departemen saya</label>
+      </span>
+      <span class="check">
+        <p-checkbox inputId="f-pic" [binary]="true" [ngModel]="picOnly()" (ngModelChange)="apply(setter(picOnly, $event))" />
+        <label for="f-pic">PIC saya</label>
+      </span>
+    }
+
+    <p-iconfield class="search">
+      <p-inputicon class="pi pi-search" />
+      <input pInputText pSize="small" type="search" class="w-full" placeholder="Cari no, detail, area, PIC…"
+             [value]="search()" (input)="onSearch($event)" aria-label="Cari temuan" />
+    </p-iconfield>
+  </div>
+
+  <app-data-grid
+    [rows]="visibleItems()"
+    [columns]="columns"
+    [actions]="actions"
+    [loading]="loading()"
+    [quickFilter]="search()"
+    [resetPageKey]="tab()"
+    [rowId]="rowId"
+    [rowHeight]="52"
+    emptyMessage="Tidak ada temuan yang cocok." />
+
+  @if (total() > items().length) {
+    <p class="caption mt-3">Menampilkan {{ items().length }} dari {{ total() }} temuan. Persempit filter untuk melihat sisanya.</p>
+  }
+</div>

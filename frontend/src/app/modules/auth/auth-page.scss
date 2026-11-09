@@ -1,0 +1,18 @@
+.login-frame {
+  width: min(100%, 30rem);
+  padding: 0.3rem;
+  border-radius: 3rem;
+  background: linear-gradient(180deg, var(--primary-color) 10%, transparent 30%);
+}
+
+.login-card {
+  padding: 3rem clamp(1.5rem, 6vw, 4rem);
+  border-radius: 2.8rem;
+}
+
+.back {
+  display: block;
+  margin-top: 1.25rem;
+  text-align: center;
+  color: var(--primary-color);
+}

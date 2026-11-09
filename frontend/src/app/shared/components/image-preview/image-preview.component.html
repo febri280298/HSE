@@ -1,0 +1,29 @@
+<div class="dialog-frame">
+  <div class="dialog-head">
+    <span class="name">{{ current()?.fileName }}</span>
+    <span class="tools">
+      @if (images.length > 1) {
+        <span class="count">{{ index() + 1 }} / {{ images.length }}</span>
+      }
+      @if (current(); as image) {
+        <a class="open-tab" [href]="image.url" target="_blank" rel="noopener" aria-label="Buka di tab baru">
+          <i class="pi pi-external-link"></i>
+        </a>
+      }
+      <p-button icon="pi pi-times" [text]="true" [rounded]="true" severity="secondary" ariaLabel="Tutup" (onClick)="close()" />
+    </span>
+  </div>
+
+  <div class="stage">
+    @if (current(); as image) {
+      <img [src]="image.url" [alt]="image.fileName" />
+    }
+
+    @if (images.length > 1) {
+      <p-button class="nav prev" icon="pi pi-angle-left" [rounded]="true" severity="secondary"
+                [disabled]="index() === 0" ariaLabel="Foto sebelumnya" (onClick)="prev()" />
+      <p-button class="nav next" icon="pi pi-angle-right" [rounded]="true" severity="secondary"
+                [disabled]="index() === images.length - 1" ariaLabel="Foto berikutnya" (onClick)="next()" />
+    }
+  </div>
+</div>

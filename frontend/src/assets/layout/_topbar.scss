@@ -1,0 +1,60 @@
+@use 'mixins' as *;
+
+.layout-topbar {
+    position: fixed;
+    top: 0;
+    left: var(--sidebar-width);
+    z-index: 997;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: calc(100% - var(--sidebar-width));
+    height: var(--topbar-height);
+    padding: 0 1.5rem 0 1rem;
+    background-color: var(--surface-card);
+    border-bottom: 1px solid var(--surface-border);
+    transition:
+        left var(--layout-section-transition-duration),
+        width var(--layout-section-transition-duration);
+
+    .layout-topbar-action {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 0.5rem;
+        color: var(--text-color-secondary);
+        cursor: pointer;
+        transition:
+            background-color var(--element-transition-duration),
+            color var(--element-transition-duration);
+
+        &:hover {
+            background-color: var(--surface-hover);
+            color: var(--text-color);
+        }
+
+        &:focus-visible {
+            @include focused();
+        }
+
+        i {
+            font-size: 1.125rem;
+        }
+    }
+
+    .layout-topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 991px) {
+    .layout-topbar {
+        left: 0;
+        width: 100%;
+    }
+}

@@ -1,0 +1,41 @@
+<div class="filters">
+  <p-select size="small" [options]="years" ariaLabel="Tahun" [ngModel]="year()" (ngModelChange)="changeYear($event)" />
+  <p-select size="small" [options]="months" optionLabel="label" optionValue="value" ariaLabel="Bulan kelengkapan"
+            [ngModel]="month()" (ngModelChange)="changeMonth($event)" />
+</div>
+
+<div class="tiles" [class.opacity-60]="loading()">
+  <div class="card tile">
+    <span class="tile-label">Accident</span>
+    <div class="tile-value">{{ totals().accidents }}</div>
+    <span class="tile-note">Target 0 setahun</span>
+  </div>
+  <div class="card tile">
+    <span class="tile-label">Kasus penyakit</span>
+    <div class="tile-value">{{ totals().diseaseCases }}</div>
+    <span class="tile-note">Sepanjang {{ year() }}</span>
+  </div>
+  <div class="card tile">
+    <span class="tile-label">Temuan close</span>
+    <div class="tile-value">{{ percent(totals().percentClosed) }}</div>
+    <span class="tile-note">{{ totals().closed }} dari {{ totals().findings }}</span>
+  </div>
+  <div class="card tile">
+    <span class="tile-label">Laporan lengkap {{ monthName() }}</span>
+    <div class="tile-value">{{ totals().complete }}/{{ totals().departments }}</div>
+    <span class="tile-note">Departemen: KPI, Kalender, PPT</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">KPI K3 per Plant</div>
+  <p class="caption mb-3">Kolom Summary, Kalender, dan PPT menunjukkan jumlah departemen yang sudah melapor untuk {{ monthName() }}.</p>
+  <app-data-grid
+    [rows]="plants()"
+    [columns]="columns"
+    [actions]="actions"
+    [loading]="loading()"
+    [rowId]="rowId"
+    [pageSize]="0"
+    emptyMessage="Belum ada data KPI." />
+</div>

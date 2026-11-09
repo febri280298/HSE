@@ -1,0 +1,83 @@
+@media (min-width: 992px) {
+    .layout-wrapper {
+        &.layout-static .layout-main-container {
+            margin-left: var(--sidebar-width);
+        }
+
+        // Menu ringkas: hanya ikon, nama menu muncul sebagai tooltip.
+        &.layout-collapsed {
+            --sidebar-width: 4.5rem;
+
+            .layout-brand {
+                justify-content: center;
+                padding: 0;
+            }
+
+            .layout-brand-text,
+            .layout-menuitem-text,
+            .layout-user-text,
+            .layout-user-more {
+                display: none;
+            }
+
+            .layout-menuitem-root-text {
+                height: 1px;
+                margin: 0.75rem 0.5rem;
+                overflow: hidden;
+                color: transparent;
+                background: var(--sidebar-border);
+            }
+
+            .layout-menu a,
+            .layout-user {
+                justify-content: center;
+            }
+
+            .layout-menu a {
+                padding: 0.75rem 0;
+            }
+        }
+
+        .layout-mask {
+            display: none;
+        }
+    }
+}
+
+@media (max-width: 991px) {
+    .blocked-scroll {
+        overflow: hidden;
+    }
+
+    .layout-wrapper {
+        .layout-main-container {
+            margin-left: 0;
+        }
+
+        .layout-sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99);
+        }
+
+        .layout-mask {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 998;
+            width: 100%;
+            height: 100%;
+            background-color: var(--maskbg);
+        }
+
+        &.layout-mobile-active {
+            .layout-sidebar {
+                transform: translateX(0);
+            }
+
+            .layout-mask {
+                display: block;
+            }
+        }
+    }
+}

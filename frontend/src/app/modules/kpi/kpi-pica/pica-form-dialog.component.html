@@ -1,0 +1,64 @@
+<div class="dialog-frame">
+  <div class="dialog-head">
+    <span>{{ pica ? 'Ubah PICA' : 'Tambah PICA' }}</span>
+    <p-button icon="pi pi-times" [text]="true" [rounded]="true" severity="secondary" ariaLabel="Tutup" (onClick)="cancel()" />
+  </div>
+
+  <div class="dialog-body">
+    @if (error()) {
+      <p-message severity="error" role="alert">{{ error() }}</p-message>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="save()" id="pica-form" novalidate>
+      <div class="form-grid">
+        <div class="field">
+          <span class="label">Plant</span>
+          <p-select formControlName="plantId" [options]="plants" optionLabel="name" optionValue="plantId" ariaLabel="Plant" [fluid]="true" appendTo="body" />
+        </div>
+        <div class="field">
+          <span class="label">Departemen</span>
+          <p-select formControlName="deptId" [options]="departments()" optionLabel="name" optionValue="deptId" placeholder="Pilih departemen"
+                    ariaLabel="Departemen" [fluid]="true" appendTo="body" [class.p-invalid]="invalid('deptId')" />
+        </div>
+        <div class="field">
+          <span class="label">Bulan</span>
+          <p-select formControlName="month" [options]="months" optionLabel="label" optionValue="value" ariaLabel="Bulan" [fluid]="true" appendTo="body" />
+        </div>
+        <div class="field">
+          <span class="label">KPI</span>
+          <p-select formControlName="kpiType" [options]="types" optionLabel="label" optionValue="value" placeholder="Pilih KPI"
+                    ariaLabel="KPI" [fluid]="true" appendTo="body" [class.p-invalid]="invalid('kpiType')" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="pica-problem">Problem issue</label>
+        <textarea pTextarea id="pica-problem" rows="3" formControlName="problemIssue" class="w-full" [class.p-invalid]="invalid('problemIssue')"></textarea>
+      </div>
+      <div class="field">
+        <label class="label" for="pica-action">Corrective action</label>
+        <textarea pTextarea id="pica-action" rows="3" formControlName="correctiveAction" class="w-full" [class.p-invalid]="invalid('correctiveAction')"></textarea>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label class="label" for="pica-due">Due date</label>
+          <input pInputText type="date" id="pica-due" formControlName="dueDate" class="w-full" [class.p-invalid]="invalid('dueDate')" />
+        </div>
+        <div class="field">
+          <label class="label" for="pica-pic">PIC</label>
+          <input pInputText id="pica-pic" formControlName="picName" class="w-full" maxlength="100" [class.p-invalid]="invalid('picName')" />
+        </div>
+        <div class="field mb-0!">
+          <span class="label">EVA</span>
+          <p-select formControlName="status" [options]="statuses" ariaLabel="EVA" [fluid]="true" appendTo="body" />
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="dialog-foot">
+    <p-button label="Batal" [text]="true" severity="secondary" (onClick)="cancel()" />
+    <button pButton type="submit" form="pica-form" [disabled]="busy()">{{ busy() ? 'Menyimpan…' : 'Simpan' }}</button>
+  </div>
+</div>

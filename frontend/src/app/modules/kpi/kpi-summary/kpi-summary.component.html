@@ -1,0 +1,55 @@
+<div class="card">
+  <div class="card-head">
+    <div class="card-title">{{ summary()?.title ?? 'Summary KPI' }}<span class="caption"> · {{ summary()?.plantName }}</span></div>
+  </div>
+
+  @if (!loading() && !plants().length) {
+    <p-message severity="warn">Akun Anda belum terdaftar di plant mana pun. Hubungi admin HSE.</p-message>
+  }
+
+  <div class="filters">
+    <p-select size="small" [options]="years" ariaLabel="Tahun" [ngModel]="year()" (ngModelChange)="changeYear($event)" />
+    <p-select size="small" [options]="plants()" optionLabel="name" optionValue="plantId" ariaLabel="Plant"
+              [ngModel]="plantId()" (ngModelChange)="changePlant($event)" />
+  </div>
+
+  <p-tabs class="tabs" [value]="tab()" [scrollable]="true" (valueChange)="selectTab($event)">
+    <p-tablist>
+      @for (item of tabs(); track item.value) {
+        <p-tab [value]="item.value">{{ item.label }}</p-tab>
+      }
+    </p-tablist>
+  </p-tabs>
+
+  @if (isAll()) {
+    <p class="caption mb-3">ALL otomatis menjumlahkan semua departemen. Isian dilakukan di tab departemen masing-masing.</p>
+  } @else if (summary()?.canEdit) {
+    <p class="caption mb-3">Klik kolom kuning untuk mengisi; baris lainnya terhitung otomatis. Jumlah temuan diambil dari Daftar Temuan.</p>
+  } @else {
+    <p class="caption mb-3">Hanya departemen ini dan tim HSE yang bisa mengisi.</p>
+  }
+
+  <app-data-grid
+    [rows]="rows()"
+    [columns]="columns"
+    [actions]="actions"
+    [loading]="loading()"
+    [rowId]="rowId"
+    [rowClassRules]="rowClasses"
+    [pageSize]="0"
+    (cellChanged)="save($event)" />
+
+  <div class="review">
+    <div class="card-head">
+      <div class="card-title">Review KPI</div>
+      <p-select size="small" [options]="reviewMonths" optionLabel="label" optionValue="value" ariaLabel="Bulan review"
+                [ngModel]="summary()?.reviewMonth" (ngModelChange)="changeReviewMonth($event)" />
+    </div>
+    <app-data-grid
+      [rows]="summary()?.review ?? []"
+      [columns]="reviewColumns"
+      [actions]="reviewActions"
+      [rowId]="reviewRowId"
+      [pageSize]="0" />
+  </div>
+</div>

@@ -1,0 +1,20 @@
+<Project>
+
+  <PropertyGroup>
+    <!-- Naik ke net11.0 setelah .NET 11 rilis resmi: cukup ubah baris ini. -->
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Company Info">
+    <Company>PT. Bonecom Tricom</Company>
+    <Product>HSE System</Product>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+</Project>

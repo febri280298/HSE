@@ -1,0 +1,19 @@
+<div class="card">
+  <div class="card-head">
+    <div class="card-title">Peran &amp; Hak Akses</div>
+    <p-button label="Tambah Peran" icon="pi pi-plus" size="small" [disabled]="loading() || !permissions().length" (onClick)="openForm()" />
+  </div>
+
+  <p class="caption mb-4">
+    Buat peran sesuai kebutuhan (mis. Patroller, User Departemen, Tim HSE), centang hak aksesnya, lalu pasang ke
+    pengguna di menu Pengguna. Perubahan langsung berlaku tanpa pengguna login ulang.
+  </p>
+
+  <app-data-grid
+    [rows]="roles()"
+    [columns]="columns()"
+    [actions]="actions"
+    [loading]="loading()"
+    [rowId]="rowId"
+    emptyMessage="Belum ada peran." />
+</div>

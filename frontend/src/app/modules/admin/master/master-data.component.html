@@ -1,0 +1,76 @@
+<div class="grid grid-cols-12 gap-6">
+  <div class="col-span-12 lg:col-span-6">
+    <div class="card">
+      <div class="card-title">Area per Plant</div>
+
+      <div class="plant">
+        <p-select [options]="plants()" optionLabel="name" optionValue="plantId" ariaLabel="Plant" [fluid]="true"
+                  [ngModel]="plantId()" (ngModelChange)="selectPlant($event)" />
+      </div>
+
+      <form class="add" (ngSubmit)="addArea()">
+        <input pInputText name="newArea" placeholder="Nama area baru, mis. DELIVERY" maxlength="100" aria-label="Nama area baru"
+               [ngModel]="newArea()" (ngModelChange)="newArea.set($event)" />
+        <p-button type="submit" label="Tambah" [disabled]="!newArea().trim() || !plantId()" />
+      </form>
+
+      <app-data-grid
+        [rows]="areas()"
+        [columns]="areaColumns"
+        [actions]="areaActions"
+        [loading]="loading()"
+        [rowId]="areaId"
+        [pageSize]="10"
+        emptyMessage="Belum ada area di plant ini."
+        (cellChanged)="saveArea($event)" />
+      <p class="caption mt-3">Klik nama atau centang Aktif untuk mengubah.</p>
+    </div>
+  </div>
+
+  <div class="col-span-12 lg:col-span-6">
+    <div class="card">
+      <div class="card-title">Departemen</div>
+
+      <form class="add" (ngSubmit)="addDepartment()">
+        <input pInputText class="code" name="newDeptCode" placeholder="Kode" maxlength="10" aria-label="Kode departemen baru"
+               [ngModel]="newDeptCode()" (ngModelChange)="newDeptCode.set($event)" />
+        <input pInputText name="newDeptName" placeholder="Nama departemen baru" maxlength="100" aria-label="Nama departemen baru"
+               [ngModel]="newDeptName()" (ngModelChange)="newDeptName.set($event)" />
+        <p-button type="submit" label="Tambah" [disabled]="!newDeptCode().trim() || !newDeptName().trim()" />
+      </form>
+
+      <app-data-grid
+        [rows]="departments()"
+        [columns]="deptColumns"
+        [actions]="deptActions"
+        [loading]="loading()"
+        [rowId]="deptId"
+        [pageSize]="10"
+        emptyMessage="Belum ada departemen."
+        (cellChanged)="saveDepartment($event)" />
+      <p class="caption mt-3">Klik kode, nama, atau centang Aktif untuk mengubah.</p>
+    </div>
+  </div>
+
+  <div class="col-span-12">
+    <div class="card">
+      <div class="card-title">Departemen KPI per Plant</div>
+      <p class="caption mb-3">Departemen yang dicentang muncul di menu KPI K3 dan wajib melapor setiap bulan. Tersimpan otomatis.</p>
+
+      <div class="kpi-plant">
+        <p-select [options]="plants()" optionLabel="name" optionValue="plantId" ariaLabel="Plant KPI" [fluid]="true"
+                  [ngModel]="kpiPlantId()" (ngModelChange)="selectKpiPlant($event)" />
+      </div>
+
+      <div class="kpi-depts">
+        @for (dept of departments(); track dept.deptId) {
+          <div class="kpi-dept">
+            <p-checkbox [binary]="true" [inputId]="'kpi-dept-' + dept.deptId"
+                        [ngModel]="kpiDepts().includes(dept.deptId)" (ngModelChange)="toggleKpiDept(dept.deptId, $event)" />
+            <label [for]="'kpi-dept-' + dept.deptId">{{ dept.name }}</label>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

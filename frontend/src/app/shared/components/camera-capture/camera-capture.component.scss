@@ -1,0 +1,63 @@
+:host {
+  display: block;
+}
+
+.camera-foot {
+  flex-wrap: wrap;
+}
+
+.viewport {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 3;
+  max-height: 70vh;
+  background: #000;
+  overflow: hidden;
+}
+
+video,
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.mirrored {
+  transform: scaleX(-1);
+}
+
+.hidden {
+  display: none;
+}
+
+.starting {
+  position: absolute;
+  font-size: 2.5rem;
+  color: #fff;
+}
+
+.error {
+  padding: 1.5rem;
+  text-align: center;
+  color: #fff;
+
+  .pi {
+    font-size: 2.5rem;
+    color: var(--p-amber-400);
+  }
+
+  p {
+    margin: 0.75rem 0 0;
+  }
+}
+
+.shutter {
+  display: inline-block;
+  min-width: 9rem;
+
+  ::ng-deep .p-button {
+    width: 100%;
+  }
+}

@@ -1,0 +1,397 @@
+// Gaya aplikasi di atas layout Sakai. Memakai variabel tema, jadi mengikuti mode terang/gelap.
+
+// Warna seri grafik. Sudah divalidasi (buta warna, kontras) terhadap permukaan kartu Sakai.
+:root {
+  --viz-series-1: #2a78d6;
+  --viz-series-2: #eb6834;
+}
+
+:root.app-dark {
+  --viz-series-1: #3987e5;
+  --viz-series-2: #d95926;
+}
+
+.card-title {
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-color);
+}
+
+.ag-cell {
+  font-variant-numeric: tabular-nums;
+}
+
+// Summary KPI: kolom kuning = diisi departemen, sama seperti file master.
+.ag-cell.kpi-input {
+  background: color-mix(in srgb, var(--p-yellow-300) 35%, transparent);
+  cursor: text;
+}
+
+.ag-row.kpi-group {
+  font-weight: 600;
+  background: var(--surface-ground);
+}
+
+.kpi-doc-link {
+  color: var(--p-primary-color);
+  font-size: 1.05rem;
+}
+
+.kpi-doc-empty {
+  color: var(--text-color-secondary);
+}
+
+.card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+
+  .card-title {
+    margin-bottom: 0;
+  }
+}
+
+.caption {
+  font-size: 0.875rem;
+  color: var(--text-color-secondary);
+}
+
+// Form
+.field {
+  margin-bottom: 1.25rem;
+
+  .caption {
+    margin: 0.375rem 0 0;
+  }
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 1rem;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.status-danger {
+  color: var(--p-red-600);
+}
+
+.status-warning {
+  color: var(--p-amber-700);
+}
+
+:root.app-dark .status-danger {
+  color: var(--p-red-400);
+}
+
+:root.app-dark .status-warning {
+  color: var(--p-amber-400);
+}
+
+p-message {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.empty-state {
+  padding: 2rem 0;
+  text-align: center;
+  color: var(--text-color-secondary);
+}
+
+.chip {
+  display: inline-block;
+  margin: 0 0.25rem 0.25rem 0;
+  padding: 0.125rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  white-space: nowrap;
+  background: var(--p-surface-200);
+  color: var(--p-surface-700);
+
+  &.primary {
+    background: color-mix(in srgb, var(--primary-color) 16%, transparent);
+    color: var(--p-primary-700);
+  }
+
+  &.success {
+    background: color-mix(in srgb, var(--p-green-500) 16%, transparent);
+    color: var(--p-green-700);
+  }
+
+  &.warning {
+    background: color-mix(in srgb, var(--p-amber-500) 18%, transparent);
+    color: var(--p-amber-700);
+  }
+
+  &.danger {
+    background: color-mix(in srgb, var(--p-red-500) 14%, transparent);
+    color: var(--p-red-700);
+  }
+}
+
+:root.app-dark .chip {
+  background: var(--p-surface-700);
+  color: var(--p-surface-200);
+
+  &.primary {
+    background: color-mix(in srgb, var(--primary-color) 18%, transparent);
+    color: var(--p-primary-300);
+  }
+
+  &.success {
+    background: color-mix(in srgb, var(--p-green-500) 18%, transparent);
+    color: var(--p-green-300);
+  }
+
+  &.warning {
+    background: color-mix(in srgb, var(--p-amber-500) 18%, transparent);
+    color: var(--p-amber-300);
+  }
+
+  &.danger {
+    background: color-mix(in srgb, var(--p-red-500) 18%, transparent);
+    color: var(--p-red-300);
+  }
+}
+
+// Isi sel AG Grid (dibuat lewat DOM, jadi gayanya harus global).
+.grid-thumb {
+  display: inline-block;
+  width: 3.25rem;
+  height: 2.5rem;
+  object-fit: cover;
+  vertical-align: middle;
+  border-radius: 6px;
+}
+
+.grid-meter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  span {
+    display: block;
+    width: 3.5rem;
+    height: 0.5rem;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--surface-border);
+  }
+
+  i {
+    display: block;
+    height: 100%;
+    background: var(--viz-series-2);
+  }
+
+  b {
+    font-weight: 400;
+  }
+}
+
+.ag-row.grid-row-current {
+  background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+}
+
+.ag-cell .chip {
+  margin-bottom: 0;
+  line-height: 1.4;
+  vertical-align: middle;
+}
+
+// Scrollbar overlay (HP) menutupi 16 px terbawah baris terakhir; beri tempat sendiri di bawah baris.
+app-data-grid .ag-body-horizontal-scroll.ag-scrollbar-invisible {
+  position: relative;
+}
+
+// Lebar dihitung dari kartu, bukan layar: tabel di kartu setengah lebar juga butuh versi ringkas.
+@container (max-width: 640px) {
+  app-data-grid .ag-paging-page-size {
+    display: none;
+  }
+}
+
+@container (max-width: 460px) {
+  app-data-grid .ag-paging-row-summary-panel,
+  .grid-meter span {
+    display: none;
+  }
+}
+
+// Modal: kepala dan kaki tetap, hanya isinya yang menggulir.
+.app-dialog .p-dialog-content {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+.dialog-frame {
+  display: flex;
+  flex-direction: column;
+  max-height: 88vh;
+  min-height: 0;
+}
+
+.dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--surface-border);
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.dialog-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.dialog-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--surface-border);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 1rem 1.5rem;
+  margin: 0;
+
+  .wide {
+    grid-column: 1 / -1;
+  }
+
+  dt {
+    margin-bottom: 0.125rem;
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+}
+
+// PrimeNG memasang posisi toast sebagai style inline; tanpa !important toast menutupi bar atas.
+.p-toast.p-toast-top-right {
+  top: calc(var(--topbar-height) + 0.75rem) !important;
+}
+
+// Tombol utama form. Di HP menempel di bawah layar supaya selalu terjangkau jempol.
+@media (max-width: 767.98px) {
+  .layout-footer {
+    display: none;
+  }
+
+  .layout-main {
+    padding-bottom: 1rem;
+  }
+
+  // Di bawah 16px, iPhone otomatis memperbesar halaman saat kolom diketuk.
+  .p-inputtext,
+  .p-textarea {
+    font-size: 16px;
+  }
+
+  .p-toast.p-toast-top-right {
+    left: 0.75rem !important;
+    right: 0.75rem !important;
+    width: auto;
+  }
+
+  .submit-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 990;
+    padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+    background: color-mix(in srgb, var(--surface-card) 92%, transparent);
+    border-top: 1px solid var(--surface-border);
+    box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.08);
+    backdrop-filter: blur(10px);
+
+    p-button {
+      display: block;
+    }
+
+    .p-button {
+      width: 100%;
+      min-height: 3.25rem;
+      border-radius: 0.875rem;
+      font-size: 1.0625rem;
+      font-weight: 600;
+    }
+  }
+
+  // Hijau lebih tua supaya teks putih tetap jelas di bawah matahari.
+  :root:not(.app-dark) .submit-bar .p-button:not(:disabled) {
+    background: var(--p-primary-700);
+    border-color: var(--p-primary-700);
+
+    &:active,
+    &:hover {
+      background: var(--p-primary-800);
+      border-color: var(--p-primary-800);
+    }
+  }
+
+  .form-actions {
+    p-button {
+      flex: 1 1 100%;
+    }
+
+    .p-button {
+      width: 100%;
+      min-height: 2.875rem;
+    }
+  }
+}
+
+// Layar HP: padding bawaan Sakai terlalu lebar untuk tabel.
+@media (max-width: 575.98px) {
+  .layout-wrapper .layout-main-container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .layout-topbar {
+    padding: 0 0.75rem;
+  }
+
+  .card {
+    padding: 1rem;
+  }
+
+  .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,65 @@
+:host {
+  display: block;
+}
+
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.count {
+  margin-right: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--text-color-secondary);
+}
+
+.open-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  color: var(--text-color-secondary);
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+}
+
+.stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+img {
+  max-width: 100%;
+  max-height: 78vh;
+  object-fit: contain;
+}
+
+.nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  &.prev {
+    left: 0.75rem;
+  }
+
+  &.next {
+    right: 0.75rem;
+  }
+}
