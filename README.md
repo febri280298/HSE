@@ -1,6 +1,6 @@
 # HSE System
 
-Sistem HSE & TPS **PT. Bonecom Tricom**: temuan Safety & 5R Patrol (foto langsung dari web) dan penilaian
+Sistem HSE & TPS temuan Safety & 5R Patrol (foto langsung dari web) dan penilaian
 improvement otomatis untuk plant KIMU, TEGAL, BTI (Plant 5), dan BTP (Plant 1).
 
 - **Backend**: ASP.NET Core (.NET 10), minimal API, SQL Server (Dapper).
@@ -52,29 +52,12 @@ db/                             skrip SQL berurutan (dijalankan manual lewat DBe
 
 ### Pengaturan aplikasi (tidak disimpan di repo)
 
-| Kunci | Contoh | Keterangan |
-|---|---|---|
-| `ConnectionStrings:Hse` | `Server=192.168.3.250;Database=web_hse;User ID=hse_app;Password=...;TrustServerCertificate=true` | koneksi aplikasi |
-| `Bootstrap:AdminUsername` | `admin` | Administrator pertama, dibuat **hanya kalau belum ada pengguna** |
-| `Bootstrap:AdminPassword` | (password kuat) | wajib diganti saat login pertama; **hapus** setelah itu |
-
 - Development: `dotnet user-secrets set "ConnectionStrings:Hse" "..." --project src/HseSystem.Api`
 - Server/IIS: environment variable `ConnectionStrings__Hse`, `Bootstrap__AdminUsername`, `Bootstrap__AdminPassword`.
 
 **Laptop development ini sudah disiapkan**: database `web_hse` di SQL Server LocalDB, dan ketiga pengaturan di atas
 sudah ada di user-secrets. Untuk melihat password admin awal:
 `cd backend; dotnet user-secrets list --project src/HseSystem.Api`.
-
-## Login dan peran
-
-- Login pertama Administrator dan setiap pengguna baru **wajib ganti password**. Sebelum diganti, hak aksesnya kosong.
-- Salah password 5 kali berturut-turut → akun terkunci 5 menit. Admin bisa membukanya lewat **Reset Password**.
-- Menu **Administrasi → Peran & Hak Akses**: buat peran (mis. Patroller, PIC Perbaikan, Admin HSE) lalu centang
-  hak aksesnya. Peran **Administrator** otomatis punya semua hak dan tidak bisa diubah atau dihapus.
-- Menu **Administrasi → Pengguna**: tambah pengguna, atur peran (boleh lebih dari satu), plant, aktif/nonaktif,
-  dan reset password.
-- Perubahan peran, nonaktif, dan reset password **berlaku seketika**, tanpa pengguna perlu login ulang.
-- Hak akses baru untuk fitur baru: tambahkan di `backend/.../Auth/Permissions.cs` dan `frontend/.../core/models/auth.model.ts`.
 
 ## Alur temuan
 
